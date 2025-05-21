@@ -5,15 +5,14 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  
+
   // Setup files
   setupFilesAfterEnv: [
     '<rootDir>/src/lib/data-access/__tests__/utils/jest-setup.ts'
   ],
-  
-  // Test categories
+
+  // Test patterns - using only testMatch (not testRegex)
   testMatch: [
     '**/__tests__/**/*.spec.ts',   // Unit tests
     '**/__tests__/**/*.test.ts',   // Integration tests

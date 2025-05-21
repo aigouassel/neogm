@@ -32,16 +32,16 @@ describe('Neo4j Connection Integration', () => {
   it('should run a query using the query runner', async () => {
     // Use the query runner
     const result = await getQueryRunner().run<{sum: number}>('RETURN 1 + 1 as sum');
-    
+
     // Verify result
     expect(result).toHaveLength(1);
     expect(result[0].sum.toNumber()).toBe(2);
   });
-  
+
   it('should run a query using the convenience function', async () => {
     // Use the convenience function
     const result = await runQuery<{sum: number}>('RETURN 1 + 1 as sum');
-    
+
     // Verify result
     expect(result).toHaveLength(1);
     expect(result[0].sum.toNumber()).toBe(2);
