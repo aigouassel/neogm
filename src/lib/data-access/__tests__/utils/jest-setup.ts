@@ -19,7 +19,7 @@ beforeAll(async () => {
   initNeo4j(connectionConfig);
   
   // Add connection config to global object for tests
-  (global as any).__TEST_NEO4J_CONFIG__ = connectionConfig;
+  global.__TEST_NEO4J_CONFIG__ = connectionConfig;
 }, 60000); // 60 second timeout for container startup
 
 afterAll(async () => {

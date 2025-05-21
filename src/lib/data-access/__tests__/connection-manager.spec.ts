@@ -4,7 +4,7 @@
 
 import { ConnectionManager } from '../connection-manager';
 
-describe('ConnectionManager', () => {
+describe(ConnectionManager.name, () => {
   let connectionManager: ConnectionManager;
   const testConfig = {
     uri: 'neo4j://localhost:7687',
@@ -19,8 +19,8 @@ describe('ConnectionManager', () => {
     connectionManager = ConnectionManager.getInstance();
     
     // If the tests are run in isolation, we need to initialize
-    if (!(connectionManager as any).isInitialized) {
-      connectionManager.init((global as any).__TEST_NEO4J_CONFIG__ || testConfig);
+    if (!connectionManager.isInitialized) {
+      connectionManager.init(global.__TEST_NEO4J_CONFIG__ || testConfig);
     }
   });
   

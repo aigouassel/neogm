@@ -18,7 +18,7 @@ export class ConnectionManager {
   private drivers: Map<string, Driver> = new Map();
   private config: MultiDatabaseConfig;
   private defaultDatabase: string;
-  private isInitialized: boolean = false;
+  private initialized: boolean = false;
 
   /**
    * Private constructor to enforce singleton pattern
@@ -40,13 +40,13 @@ export class ConnectionManager {
    * @param config Connection configuration
    */
   public init(config: ConnectionConfig): void {
-    if (this.isInitialized) {
+    if (this.initialized) {
       throw new Error('ConnectionManager is already initialized');
     }
 
     this.config = normalizeConfig(config);
     this.defaultDatabase = this.config.default;
-    this.isInitialized = true;
+    this.initialized = true;
   }
 
   /**
@@ -81,6 +81,10 @@ export class ConnectionManager {
     this.drivers.set(database, driver);
 
     return driver;
+  }
+
+  get isInitialized(): boolean {
+    return this.initialized
   }
 
   /**
@@ -132,7 +136,7 @@ export class ConnectionManager {
    * @throws Error if not initialized
    */
   private ensureInitialized(): void {
-    if (!this.isInitialized) {
+    if (!this.initialized) {
       throw new Error('ConnectionManager is not initialized. Call init() first.');
     }
   }
@@ -154,6 +158,6 @@ export class ConnectionManager {
     
     // Clear the drivers map
     this.drivers.clear();
-    this.isInitialized = false;
+    this.initialized = false;
   }
 }
