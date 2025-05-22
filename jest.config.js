@@ -9,7 +9,7 @@ module.exports = {
 
   // Setup files
   setupFilesAfterEnv: [
-    '<rootDir>/src/lib/data-access/__tests__/utils/jest-setup.ts'
+    '<rootDir>/src/lib/data-access/__tests__/jest-setup/index.ts'
   ],
 
   // Test patterns - using only testMatch (not testRegex)

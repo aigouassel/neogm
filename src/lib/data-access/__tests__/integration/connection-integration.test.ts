@@ -5,6 +5,7 @@
  */
 
 import { getQueryRunner, getSessionManager, runQuery } from "../../index";
+import { Person } from "../utils/Person";
 
 describe("Neo4j Connection Integration", () => {
   it("should connect to Neo4j and execute a simple query", async () => {
@@ -52,7 +53,7 @@ describe("Neo4j Connection Integration", () => {
     });
 
     // Retrieve the node
-    const result = await runQuery<{ name: string; age: number }>(
+    const result = await runQuery<Person>(
       "MATCH (p:Person {name: $name}) RETURN p",
       { name: "Alice" }
     );
@@ -63,7 +64,7 @@ describe("Neo4j Connection Integration", () => {
     expect(result[0].age).toBe(30);
 
     // Clean up
-    await runQuery("MATCH (p:Person {name: $name}) DELETE p", {
+    await runQuery<Person>("MATCH (p:Person {name: $name}) DELETE p", {
       name: "Alice",
     });
   });
@@ -78,7 +79,7 @@ describe("Neo4j Connection Integration", () => {
 
       try {
         // Create a node in the transaction
-        await tx.run("CREATE (p:Person {name: $name, age: $age}) RETURN p", {
+        const toto = await tx.run<Person>("CREATE (p:Person {name: $name, age: $age}) RETURN p", {
           name: "Bob",
           age: 25,
         });

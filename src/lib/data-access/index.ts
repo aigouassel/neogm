@@ -15,12 +15,13 @@ export const Neo4j = neo4j;
 import { ConnectionManager } from './connection-manager';
 import { SessionManager } from './session-manager';
 import { QueryRunner } from './query-runner';
+import { ConnectionConfig } from './connection-config';
 
 /**
  * Initialize the Neo4j connection
  * @param config Neo4j connection configuration
  */
-export function initNeo4j(config: any): void {
+export function initNeo4j(config: ConnectionConfig): void {
   ConnectionManager.getInstance().init(config);
 }
 

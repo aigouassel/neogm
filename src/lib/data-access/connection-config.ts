@@ -47,11 +47,11 @@ export interface DatabaseConfig {
 /**
  * Multi-database configuration
  */
-export interface MultiDatabaseConfig {
+export interface MultiDatabaseConfig<N extends string = string> {
   /** The default database to use when no specific database is specified */
-  default: string;
+  default: N;
   /** Map of database names to their configurations */
-  databases: Record<string, DatabaseConfig>;
+  databases: Record<N, DatabaseConfig>;
 }
 
 /**
@@ -95,10 +95,6 @@ export function normalizeConfig(config: ConnectionConfig): MultiDatabaseConfig {
         default: {
           name: 'default',
           uri: config,
-          auth: {
-            username: 'neo4j',
-            password: 'neo4j'
-          }
         }
       }
     };

@@ -108,59 +108,6 @@ await getSessionManager().withSession(async (session) => {
 }, { database: 'reporting' });
 ```
 
-## Sample Helper Class
-
-For applications with complex multi-database requirements, a helper class can simplify usage:
-
-```typescript
-import { MultiConnectionHelper } from './multi-connection-helper';
-
-async function main() {
-  const helper = new MultiConnectionHelper();
-  
-  // Initialize with multiple databases
-  helper.initialize({
-    default: 'main',
-    databases: {
-      main: {
-        name: 'main',
-        uri: 'neo4j://localhost:7687',
-        auth: { username: 'neo4j', password: 'password' }
-      },
-      analytics: {
-        name: 'analytics',
-        uri: 'neo4j://localhost:7687',
-        auth: { username: 'neo4j', password: 'password' }
-      }
-    }
-  });
-  
-  // Create test data in both databases
-  await helper.createTestDataInDatabases(
-    ['main', 'analytics'],
-    'CREATE (n:Test {name: $name}) RETURN n',
-    { name: 'MultiDB Test' }
-  );
-  
-  // Query each database with appropriate queries
-  const results = await helper.executeAcrossDatabases(['main', 'analytics'], 
-    async (database) => {
-      // Different query for each database
-      if (database === 'main') {
-        return helper.queryDatabase(database, 'MATCH (n:User) RETURN count(n) as userCount');
-      } else {
-        return helper.queryDatabase(database, 'MATCH (n:Metric) RETURN count(n) as metricCount');
-      }
-    }
-  );
-  
-  console.log('Query results:', results);
-  
-  // Clean up
-  await helper.closeConnections();
-}
-```
-
 ## Limitations
 
 1. **Enterprise Edition Required**: Multi-database support within a single Neo4j instance requires Neo4j Enterprise Edition.
