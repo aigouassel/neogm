@@ -1,7 +1,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  roots: ['<rootDir>/src'],
+  roots: ['<rootDir>/tests', '<rootDir>/src'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
@@ -9,13 +9,13 @@ module.exports = {
 
   // Setup files
   setupFilesAfterEnv: [
-    '<rootDir>/src/lib/data-access/__tests__/jest-setup/index.ts'
+    '<rootDir>/tests/setup/jest.setup.ts'
   ],
 
   // Test patterns - using only testMatch (not testRegex)
   testMatch: [
-    '**/__tests__/**/*.spec.ts',   // Unit tests
-    '**/__tests__/**/*.test.ts',   // Integration tests
+    '**/tests/**/*.spec.ts',   // Unit tests
+    '**/tests/**/*.test.ts',   // Integration tests
   ],
   
   // Custom test runners

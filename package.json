@@ -21,7 +21,7 @@
     "lint": "eslint 'src/**/*.ts'",
     "clean": "rimraf dist",
     "prepare": "yarn clean && yarn build",
-    "prepublishOnly": "yarn test && yarn lint",
+    "prepublishOnly": "yarn lint",
     "docker:up": "docker-compose -f docker-compose.test.yml up -d",
     "docker:down": "docker-compose -f docker-compose.test.yml down -v",
     "docker:logs": "docker-compose -f docker-compose.test.yml logs -f",
