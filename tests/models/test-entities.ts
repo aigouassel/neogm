@@ -366,3 +366,6 @@ export class Project extends BaseEntity implements IProject {
   @Relationship('WORKED_ON_BY', () => Team, { direction: 'out' })
   assignedTeams?: ITeam[];
 }
+
+// Export alias for test compatibility
+export { User as TestUser };

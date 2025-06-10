@@ -1,5 +1,19 @@
+import 'reflect-metadata';
 import { NeoGM } from '../../src/lib/neogm';
 import { testConfig } from '../setup/test-config';
+import { Node, Property, BaseEntity } from '../../src';
+
+@Node('TestUser')
+class TestUser extends BaseEntity {
+  @Property({ required: true })
+  name!: string;
+
+  @Property({ required: true })
+  email!: string;
+
+  @Property()
+  age?: number;
+}
 
 describe('NeoGM', () => {
   let neogm: NeoGM;
@@ -24,114 +38,45 @@ describe('NeoGM', () => {
     });
   });
 
-  describe('node operations', () => {
+  describe('repository operations', () => {
     beforeEach(async () => {
       await neogm.connect();
       await neogm.clearDatabase();
     });
 
-    it('should create and save nodes', async () => {
-      const node = neogm.createNode('Person', { name: 'John', age: 30 });
-      await node.save();
-      
-      expect(node.getId()).toBeDefined();
-      expect(node.getProperty('name')).toBe('John');
+    it('should get repository for entity', () => {
+      const userRepo = neogm.getRepository(TestUser);
+      expect(userRepo).toBeDefined();
     });
 
-    it('should find nodes by ID', async () => {
-      const node = neogm.createNode('Person', { name: 'John' });
-      await node.save();
-      
-      const foundNode = await neogm.findNodeById(node.getId()!, 'Person');
-      expect(foundNode).not.toBeNull();
-      expect(foundNode!.getProperty('name')).toBe('John');
-    });
-
-    it('should find all nodes', async () => {
-      const node1 = neogm.createNode('Person', { name: 'John' });
-      const node2 = neogm.createNode('Person', { name: 'Jane' });
-      await Promise.all([node1.save(), node2.save()]);
-      
-      const nodes = await neogm.findNodes('Person');
-      expect(nodes).toHaveLength(2);
-    });
-
-    it('should find nodes with conditions', async () => {
-      const node1 = neogm.createNode('Person', { name: 'John', age: 30 });
-      const node2 = neogm.createNode('Person', { name: 'Jane', age: 25 });
-      await Promise.all([node1.save(), node2.save()]);
-      
-      const nodes = await neogm.findNodes('Person', { age: 30 });
-      expect(nodes).toHaveLength(1);
-      expect(nodes[0].getProperty('name')).toBe('John');
-    });
-
-    it('should find one node', async () => {
-      const node = neogm.createNode('Person', { name: 'John', age: 30 });
-      await node.save();
-      
-      const foundNode = await neogm.findOneNode('Person', { name: 'John' });
-      expect(foundNode).not.toBeNull();
-      expect(foundNode!.getProperty('age')).toBe(30);
+    it('should reuse same repository instance', () => {
+      const userRepo1 = neogm.getRepository(TestUser);
+      const userRepo2 = neogm.getRepository(TestUser);
+      expect(userRepo1).toBe(userRepo2);
     });
   });
 
-  describe('relationship operations', () => {
-    let startNode: any;
-    let endNode: any;
-
+  describe('entity operations', () => {
     beforeEach(async () => {
       await neogm.connect();
       await neogm.clearDatabase();
-      
-      startNode = neogm.createNode('Person', { name: 'Alice' });
-      endNode = neogm.createNode('Person', { name: 'Bob' });
-      await Promise.all([startNode.save(), endNode.save()]);
     });
 
-    it('should create and save relationships', async () => {
-      const relationship = neogm.createRelationship('KNOWS', startNode, endNode, { since: 2020 });
-      await relationship.save();
-      
-      expect(relationship.getId()).toBeDefined();
-      expect(relationship.getProperty('since')).toBe(2020);
+    it('should create entity with connection manager', () => {
+      const user = neogm.createEntity(TestUser);
+      expect(user).toBeInstanceOf(TestUser);
     });
 
-    it('should find relationships by ID', async () => {
-      const relationship = neogm.createRelationship('KNOWS', startNode, endNode, { since: 2020 });
-      await relationship.save();
+    it('should create entity with initial data', () => {
+      const user = neogm.createEntity(TestUser, {
+        name: 'John',
+        email: 'john@example.com',
+        age: 30
+      });
       
-      const foundRel = await neogm.findRelationshipById(relationship.getId()!, 'KNOWS');
-      expect(foundRel).not.toBeNull();
-      expect(foundRel!.getProperty('since')).toBe(2020);
-    });
-
-    it('should find all relationships', async () => {
-      // Ensure nodes have IDs
-      expect(startNode.getId()).toBeDefined();
-      expect(endNode.getId()).toBeDefined();
-      
-      const rel1 = neogm.createRelationship('KNOWS', startNode, endNode, { type: 'friend' });
-      const rel2 = neogm.createRelationship('KNOWS', endNode, startNode, { type: 'colleague' });
-      await Promise.all([rel1.save(), rel2.save()]);
-      
-      const relationships = await neogm.findRelationships('KNOWS');
-      expect(relationships).toHaveLength(2);
-    });
-
-    it('should find relationships between nodes', async () => {
-      const rel1 = neogm.createRelationship('KNOWS', startNode, endNode, { type: 'friend' });
-      const rel2 = neogm.createRelationship('WORKS_WITH', startNode, endNode, { department: 'IT' });
-      await Promise.all([rel1.save(), rel2.save()]);
-      
-      const knowsRels = await neogm.findRelationshipsBetweenNodes(
-        startNode.getId()!,
-        endNode.getId()!,
-        'KNOWS'
-      );
-      
-      expect(knowsRels).toHaveLength(1);
-      expect(knowsRels[0].getProperty('type')).toBe('friend');
+      expect(user.name).toBe('John');
+      expect(user.email).toBe('john@example.com');
+      expect(user.age).toBe(30);
     });
   });
 
@@ -207,20 +152,18 @@ describe('NeoGM', () => {
     });
 
     it('should clear all nodes and relationships', async () => {
-      const node1 = neogm.createNode('Person', { name: 'John' });
-      const node2 = neogm.createNode('Person', { name: 'Jane' });
-      await Promise.all([node1.save(), node2.save()]);
+      const userRepo = neogm.getRepository(TestUser);
       
-      const rel = neogm.createRelationship('KNOWS', node1, node2);
-      await rel.save();
+      const user1 = neogm.createEntity(TestUser, { name: 'John', email: 'john@example.com', age: 30 });
+      const user2 = neogm.createEntity(TestUser, { name: 'Jane', email: 'jane@example.com', age: 25 });
+      
+      await userRepo.save(user1);
+      await userRepo.save(user2);
       
       await neogm.clearDatabase();
       
-      const nodes = await neogm.findNodes('Person');
-      const relationships = await neogm.findRelationships('KNOWS');
-      
-      expect(nodes).toHaveLength(0);
-      expect(relationships).toHaveLength(0);
+      const users = await userRepo.findAll();
+      expect(users).toHaveLength(0);
     });
   });
 });

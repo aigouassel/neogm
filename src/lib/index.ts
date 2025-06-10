@@ -3,8 +3,6 @@
  */
 
 export { NeoGM } from './neogm';
-export { Node } from './node';
-export { Relationship } from './relationship';
 export { QueryBuilder, RawQuery } from './query-builder';
 export { ConnectionManager } from './connection';
 export * from './types';

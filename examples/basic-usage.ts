@@ -1,4 +1,36 @@
-import { NeoGM } from '../src';
+import { NeoGM, Node, Property, Relationship, BaseEntity } from '../src';
+import 'reflect-metadata';
+
+// Define our entities using decorators
+@Node('Person')
+class Person extends BaseEntity {
+  @Property({ required: true })
+  name!: string;
+
+  @Property({ required: true })
+  email!: string;
+
+  @Property({ type: 'number' })
+  age?: number;
+
+  @Relationship({ type: 'KNOWS', direction: 'OUT', target: () => Person })
+  friends?: Person[];
+
+  @Relationship({ type: 'WORKS_FOR', direction: 'OUT', target: () => Company })
+  employer?: Company;
+}
+
+@Node('Company')
+class Company extends BaseEntity {
+  @Property({ required: true })
+  name!: string;
+
+  @Property()
+  industry?: string;
+
+  @Relationship({ type: 'WORKS_FOR', direction: 'IN', target: () => Person })
+  employees?: Person[];
+}
 
 async function basicExample() {
   // Initialize the ORM with connection config
@@ -17,71 +49,84 @@ async function basicExample() {
     // Clear database for clean start
     await neogm.clearDatabase();
 
-    // Create nodes
-    const alice = neogm.createNode('Person', {
+    // Get repositories
+    const personRepo = neogm.getRepository(Person);
+    const companyRepo = neogm.getRepository(Company);
+
+    // Create entities
+    const alice = neogm.createEntity(Person, {
       name: 'Alice Smith',
       age: 30,
       email: 'alice@example.com'
     });
 
-    const bob = neogm.createNode('Person', {
+    const bob = neogm.createEntity(Person, {
       name: 'Bob Johnson',
       age: 25,
       email: 'bob@example.com'
     });
 
-    const company = neogm.createNode('Company', {
+    const company = neogm.createEntity(Company, {
       name: 'TechCorp',
       industry: 'Technology'
     });
 
-    // Save nodes to database
-    await alice.save();
-    await bob.save();
-    await company.save();
+    // Save entities to database
+    await personRepo.save(alice);
+    await personRepo.save(bob);
+    await companyRepo.save(company);
 
-    console.log('Created nodes:', {
-      alice: alice.getId(),
-      bob: bob.getId(),
-      company: company.getId()
+    console.log('Created entities:', {
+      alice: alice.id,
+      bob: bob.id,
+      company: company.id
     });
 
-    // Create relationships
-    const friendship = neogm.createRelationship('KNOWS', alice, bob, {
-      since: 2020,
-      type: 'friend'
-    });
+    // Create relationships using raw queries (for now)
+    await neogm.rawQuery().execute(`
+      MATCH (a:Person {id: $aliceId}), (b:Person {id: $bobId})
+      CREATE (a)-[:KNOWS {since: 2020, type: 'friend'}]->(b)
+    `, { aliceId: alice.id, bobId: bob.id });
 
-    const employment1 = neogm.createRelationship('WORKS_FOR', alice, company, {
+    await neogm.rawQuery().execute(`
+      MATCH (p:Person {id: $personId}), (c:Company {id: $companyId})
+      CREATE (p)-[:WORKS_FOR {position: $position, startDate: $startDate}]->(c)
+    `, { 
+      personId: alice.id, 
+      companyId: company.id,
       position: 'Software Engineer',
       startDate: '2021-01-15'
     });
 
-    const employment2 = neogm.createRelationship('WORKS_FOR', bob, company, {
+    await neogm.rawQuery().execute(`
+      MATCH (p:Person {id: $personId}), (c:Company {id: $companyId})
+      CREATE (p)-[:WORKS_FOR {position: $position, startDate: $startDate}]->(c)
+    `, { 
+      personId: bob.id, 
+      companyId: company.id,
       position: 'Product Manager',
       startDate: '2021-03-01'
     });
 
-    // Save relationships
-    await friendship.save();
-    await employment1.save();
-    await employment2.save();
-
     console.log('Created relationships');
 
-    // Query examples
+    // Repository query examples
     
     // Find all people
-    const allPeople = await neogm.findNodes('Person');
-    console.log('All people:', allPeople.map(p => p.getProperty('name')));
+    const allPeople = await personRepo.findAll();
+    console.log('All people:', allPeople.map(p => p.name));
 
-    // Find person by name
-    const foundPerson = await neogm.findOneNode('Person', { name: 'Alice Smith' });
-    console.log('Found person:', foundPerson?.getProperty('name'));
+    // Find person by property
+    const foundPerson = await personRepo.findOne({ name: 'Alice Smith' });
+    console.log('Found person:', foundPerson?.name);
 
-    // Find people over 25
-    const adults = await neogm.findNodes('Person', { age: 30 });
-    console.log('People over 25:', adults.map(p => p.getProperty('name')));
+    // Find people by age
+    const adults = await personRepo.findMany({ age: 30 });
+    console.log('People aged 30:', adults.map(p => p.name));
+
+    // Find person by ID
+    const personById = await personRepo.findById(alice.id!);
+    console.log('Found by ID:', personById?.name);
 
     // Query builder example
     const employeeQuery = await neogm.queryBuilder()
@@ -90,7 +135,10 @@ async function basicExample() {
       .return('p.name as name, p.email as email')
       .execute();
 
-    console.log('Company employees:', employeeQuery.records);
+    console.log('Company employees:', employeeQuery.records.map(r => ({
+      name: r.get('name'),
+      email: r.get('email')
+    })));
 
     // Raw query example
     const connectionQuery = await neogm.rawQuery().execute(`
@@ -98,20 +146,25 @@ async function basicExample() {
       RETURN a.name as person1, b.name as person2
     `);
 
-    console.log('Friendships:', connectionQuery.records);
+    console.log('Friendships:', connectionQuery.records.map(r => ({
+      person1: r.get('person1'),
+      person2: r.get('person2')
+    })));
 
     // Transaction example
     await neogm.executeInTransaction(async (tx) => {
-      await tx.run('CREATE (p:Person {name: $name, age: $age})', {
+      await tx.run('CREATE (p:Person {id: $id, name: $name, age: $age, email: $email})', {
+        id: 'charlie-id',
         name: 'Charlie Brown',
-        age: 35
+        age: 35,
+        email: 'charlie@example.com'
       });
       
       await tx.run(`
-        MATCH (p:Person {name: $name}), (c:Company {name: $companyName})
+        MATCH (p:Person {id: $personId}), (c:Company {name: $companyName})
         CREATE (p)-[:WORKS_FOR {position: $position}]->(c)
       `, {
-        name: 'Charlie Brown',
+        personId: 'charlie-id',
         companyName: 'TechCorp',
         position: 'Senior Developer'
       });
@@ -120,8 +173,11 @@ async function basicExample() {
     console.log('Transaction completed');
 
     // Verify transaction
-    const allEmployees = await neogm.findRelationships('WORKS_FOR');
-    console.log('Total employees:', allEmployees.length);
+    const totalEmployees = await neogm.rawQuery().execute(`
+      MATCH ()-[r:WORKS_FOR]->()
+      RETURN count(r) as count
+    `);
+    console.log('Total employees:', totalEmployees.records[0].get('count').toNumber());
 
   } catch (error) {
     console.error('Error:', error);

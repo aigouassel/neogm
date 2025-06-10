@@ -1,6 +1,6 @@
 import { ConnectionManager } from '../connection';
 import { MetadataStorage } from '../decorators/metadata';
-import { NodeMetadata, PropertyMetadata } from '../decorators/types';
+import { NodeMetadata } from '../decorators/types';
 
 export abstract class BaseEntity {
   private _id?: string | number;

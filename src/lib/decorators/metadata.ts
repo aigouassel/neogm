@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { NodeMetadata, PropertyMetadata, RelationshipMetadata, METADATA_KEY } from './types';
+import { NodeMetadata, PropertyMetadata, RelationshipMetadata } from './types';
 
 export class MetadataStorage {
   private static instance: MetadataStorage;

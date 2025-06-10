@@ -1,6 +1,5 @@
 import { QueryBuilder, RawQuery } from '../../src/lib/query-builder';
 import { ConnectionManager } from '../../src/lib/connection';
-import { Node } from '../../src/lib/node';
 import { testConfig } from '../setup/test-config';
 import { TestIsolation } from '../setup/test-isolation';
 
@@ -89,11 +88,10 @@ describe('QueryBuilder', () => {
 
   describe('execute', () => {
     beforeEach(async () => {
-      const node1 = new Node('Person', { name: 'Alice', age: 30 }, connectionManager);
-      const node2 = new Node('Person', { name: 'Bob', age: 25 }, connectionManager);
-      const node3 = new Node('Person', { name: 'Charlie', age: 35 }, connectionManager);
-      
-      await Promise.all([node1.save(), node2.save(), node3.save()]);
+      const rawQuery = new RawQuery(connectionManager);
+      await rawQuery.execute('CREATE (n:Person {name: $name, age: $age})', { name: 'Alice', age: 30 });
+      await rawQuery.execute('CREATE (n:Person {name: $name, age: $age})', { name: 'Bob', age: 25 });
+      await rawQuery.execute('CREATE (n:Person {name: $name, age: $age})', { name: 'Charlie', age: 35 });
     });
 
     it('should execute query and return results', async () => {
