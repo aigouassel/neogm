@@ -130,7 +130,7 @@ export class RawQuery {
     this.connectionManager = connectionManager;
   }
 
-  async execute(query: string, parameters: Record<string, any> = {}): Promise<QueryResult> {
+  async execute<T = any>(query: string, parameters: Record<string, any> = {}): Promise<QueryResult<T>> {
     const session = this.connectionManager.getSession();
 
     try {
