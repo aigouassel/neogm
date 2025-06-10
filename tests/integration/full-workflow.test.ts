@@ -177,11 +177,19 @@ describe('Full Workflow Integration Tests', () => {
       const charlie = await neogm.findOneNode('Person', { name: 'Charlie' });
       const diana = await neogm.findOneNode('Person', { name: 'Diana' });
 
+      // Ensure all nodes were found and have IDs
+      if (!alice || !bob || !charlie || !diana) {
+        throw new Error('Could not find all required nodes');
+      }
+      if (!alice.getId() || !bob.getId() || !charlie.getId() || !diana.getId()) {
+        throw new Error('Found nodes do not have IDs');
+      }
+
       const relationships = [
-        { start: alice!, end: bob!, type: 'KNOWS', props: { since: 2018 } },
-        { start: bob!, end: charlie!, type: 'KNOWS', props: { since: 2019 } },
-        { start: alice!, end: diana!, type: 'KNOWS', props: { since: 2020 } },
-        { start: charlie!, end: diana!, type: 'KNOWS', props: { since: 2021 } }
+        { start: alice, end: bob, type: 'KNOWS', props: { since: 2018 } },
+        { start: bob, end: charlie, type: 'KNOWS', props: { since: 2019 } },
+        { start: alice, end: diana, type: 'KNOWS', props: { since: 2020 } },
+        { start: charlie, end: diana, type: 'KNOWS', props: { since: 2021 } }
       ];
 
       for (const rel of relationships) {
@@ -213,7 +221,7 @@ describe('Full Workflow Integration Tests', () => {
       `);
 
       expect(result.records).toHaveLength(2);
-      expect(result.records[0].connections).toBe(2);
+      expect(result.records[0].connections.toNumber()).toBe(2);
     });
 
     it('should find shortest path between people', async () => {
@@ -223,8 +231,9 @@ describe('Full Workflow Integration Tests', () => {
       `, { start: 'Alice', end: 'Charlie' });
 
       expect(result.records).toHaveLength(1);
-      expect(result.records[0].pathLength).toBe(2);
-      expect(result.records[0].names).toEqual(['Alice', 'Bob', 'Charlie']);
+      expect(result.records[0].pathLength.toNumber()).toBe(2);
+      expect(result.records[0].names).toEqual(expect.arrayContaining(['Alice', 'Charlie']));
+      expect(result.records[0].names).toHaveLength(3);
     });
 
     it('should group people by city and count', async () => {
@@ -237,7 +246,7 @@ describe('Full Workflow Integration Tests', () => {
       expect(result.records).toHaveLength(3);
       
       const nycRecord = result.records.find(r => r.city === 'New York');
-      expect(nycRecord?.count).toBe(2);
+      expect(nycRecord?.count.toNumber()).toBe(2);
       expect(nycRecord?.people).toContain('Alice');
       expect(nycRecord?.people).toContain('Diana');
     });

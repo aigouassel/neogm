@@ -43,7 +43,8 @@ export interface QueryOptions {
 
 export interface IQueryBuilder {
   match(pattern: string): IQueryBuilder;
-  where(conditions: Record<string, any>): IQueryBuilder;
+  optionalMatch(pattern: string): IQueryBuilder;
+  where(conditions: Record<string, any> | string): IQueryBuilder;
   return(fields: string): IQueryBuilder;
   limit(count: number): IQueryBuilder;
   skip(count: number): IQueryBuilder;

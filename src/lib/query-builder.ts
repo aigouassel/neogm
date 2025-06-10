@@ -16,16 +16,25 @@ export class QueryBuilder implements IQueryBuilder {
   }
 
   match(pattern: string): QueryBuilder {
-    this.matchClauses.push(pattern);
+    this.matchClauses.push(`MATCH ${pattern}`);
     return this;
   }
 
-  where(conditions: Record<string, any>): QueryBuilder {
-    Object.entries(conditions).forEach(([key, value]) => {
-      const paramName = `param_${Object.keys(this.parameters).length}`;
-      this.parameters[paramName] = value;
-      this.whereClauses.push(`${key} = $${paramName}`);
-    });
+  optionalMatch(pattern: string): QueryBuilder {
+    this.matchClauses.push(`OPTIONAL MATCH ${pattern}`);
+    return this;
+  }
+
+  where(conditions: Record<string, any> | string): QueryBuilder {
+    if (typeof conditions === 'string') {
+      this.whereClauses.push(conditions);
+    } else {
+      Object.entries(conditions).forEach(([key, value]) => {
+        const paramName = `param_${Object.keys(this.parameters).length}`;
+        this.parameters[paramName] = value;
+        this.whereClauses.push(`${key} = $${paramName}`);
+      });
+    }
     return this;
   }
 
@@ -53,7 +62,7 @@ export class QueryBuilder implements IQueryBuilder {
     const parts: string[] = [];
 
     if (this.matchClauses.length > 0) {
-      parts.push(`MATCH ${this.matchClauses.join(', ')}`);
+      parts.push(this.matchClauses.join(' '));
     }
 
     if (this.whereClauses.length > 0) {

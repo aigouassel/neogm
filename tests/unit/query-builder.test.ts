@@ -2,6 +2,7 @@ import { QueryBuilder, RawQuery } from '../../src/lib/query-builder';
 import { ConnectionManager } from '../../src/lib/connection';
 import { Node } from '../../src/lib/node';
 import { testConfig } from '../setup/test-config';
+import { TestIsolation } from '../setup/test-isolation';
 
 describe('QueryBuilder', () => {
   let connectionManager: ConnectionManager;
@@ -17,13 +18,7 @@ describe('QueryBuilder', () => {
   });
 
   beforeEach(async () => {
-    const session = connectionManager.getSession();
-    try {
-      await session.run('MATCH (n) DETACH DELETE n');
-    } finally {
-      await session.close();
-    }
-    
+    await TestIsolation.ensureCleanDatabase(connectionManager);
     queryBuilder = QueryBuilder.create(connectionManager);
   });
 
@@ -170,7 +165,7 @@ describe('RawQuery', () => {
     it('should handle queries without parameters', async () => {
       const result = await rawQuery.execute('MATCH (n) RETURN count(n) as count');
       expect(result.records).toHaveLength(1);
-      expect(result.records[0].count).toBe(0);
+      expect(result.records[0].count.toNumber()).toBe(0);
     });
   });
 
@@ -186,7 +181,7 @@ describe('RawQuery', () => {
       expect(results).toHaveLength(2);
       
       const countResult = await rawQuery.execute('MATCH (n:Person) RETURN count(n) as count');
-      expect(countResult.records[0].count).toBe(2);
+      expect(countResult.records[0].count.toNumber()).toBe(2);
     });
 
     it('should rollback transaction on error', async () => {
@@ -198,7 +193,7 @@ describe('RawQuery', () => {
       await expect(rawQuery.executeInTransaction(queries)).rejects.toThrow();
       
       const countResult = await rawQuery.execute('MATCH (n:Person) RETURN count(n) as count');
-      expect(countResult.records[0].count).toBe(0);
+      expect(countResult.records[0].count.toNumber()).toBe(0);
     });
 
     it('should work with callback function', async () => {

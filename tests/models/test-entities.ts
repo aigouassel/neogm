@@ -1,9 +1,91 @@
 import { Node, Property, Relationship } from '../../src/lib/decorators';
 import { BaseEntity } from '../../src/lib/entity';
 
+// Use interfaces to avoid circular reference issues
+interface IUser extends BaseEntity {
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  age?: number;
+  bio?: string;
+  createdAt?: Date;
+  lastLoginAt?: Date;
+  isActive?: boolean;
+  tags?: string[];
+  following?: IUser[];
+  followers?: IUser[];
+  currentCompany?: ICompany;
+  posts?: IPost[];
+  likedPosts?: IPost[];
+  teams?: ITeam[];
+}
+
+interface ICompany extends BaseEntity {
+  name: string;
+  description?: string;
+  website?: string;
+  foundedYear?: number;
+  industry?: string;
+  size?: 'startup' | 'small' | 'medium' | 'large' | 'enterprise';
+  headquarters?: { city: string; country: string };
+  isPublic?: boolean;
+  employees?: IUser[];
+  teams?: ITeam[];
+}
+
+interface ITeam extends BaseEntity {
+  name: string;
+  description?: string;
+  department?: string;
+  createdAt?: Date;
+  isActive?: boolean;
+  company?: ICompany;
+  members?: IUser[];
+  teamLead?: IUser;
+}
+
+interface IPost extends BaseEntity {
+  title: string;
+  content: string;
+  slug?: string;
+  status?: 'draft' | 'published' | 'archived';
+  createdAt?: Date;
+  publishedAt?: Date;
+  viewCount?: number;
+  tags?: string[];
+  author?: IUser;
+  likedBy?: IUser[];
+  comments?: IComment[];
+}
+
+interface IComment extends BaseEntity {
+  content: string;
+  createdAt?: Date;
+  isEdited?: boolean;
+  post?: IPost;
+  author?: IUser;
+  parentComment?: IComment;
+  replies?: IComment[];
+}
+
+interface IProject extends BaseEntity {
+  name: string;
+  description?: string;
+  status?: 'planning' | 'active' | 'completed' | 'cancelled';
+  startDate?: Date;
+  endDate?: Date;
+  priority?: 'low' | 'medium' | 'high' | 'critical';
+  budget?: number;
+  ownerCompany?: ICompany;
+  assignedUsers?: IUser[];
+  projectManager?: IUser;
+  assignedTeams?: ITeam[];
+}
+
 // User entity with comprehensive property examples
 @Node('User')
-export class User extends BaseEntity {
+export class User extends BaseEntity implements IUser {
   @Property({ required: true, unique: true })
   username!: string;
 
@@ -53,22 +135,22 @@ export class User extends BaseEntity {
 
   // Relationships
   @Relationship('FOLLOWS', () => User, { direction: 'out' })
-  following?: User[];
+  following?: IUser[];
 
   @Relationship('FOLLOWS', () => User, { direction: 'in' })
-  followers?: User[];
+  followers?: IUser[];
 
   @Relationship('WORKS_AT', () => Company)
-  currentCompany?: Company;
+  currentCompany?: ICompany;
 
   @Relationship('CREATED', () => Post, { direction: 'out' })
-  posts?: Post[];
+  posts?: IPost[];
 
   @Relationship('LIKES', () => Post, { direction: 'out' })
-  likedPosts?: Post[];
+  likedPosts?: IPost[];
 
   @Relationship('MEMBER_OF', () => Team, { direction: 'out' })
-  teams?: Team[];
+  teams?: ITeam[];
 
   // Computed property example
   get fullName(): string {
@@ -78,7 +160,7 @@ export class User extends BaseEntity {
 
 // Company entity
 @Node('Company')
-export class Company extends BaseEntity {
+export class Company extends BaseEntity implements ICompany {
   @Property({ required: true, unique: true })
   name!: string;
 
@@ -114,15 +196,15 @@ export class Company extends BaseEntity {
 
   // Relationships
   @Relationship('WORKS_AT', () => User, { direction: 'in' })
-  employees?: User[];
+  employees?: IUser[];
 
   @Relationship('HAS_TEAM', () => Team, { direction: 'out' })
-  teams?: Team[];
+  teams?: ITeam[];
 }
 
 // Team entity
 @Node('Team')
-export class Team extends BaseEntity {
+export class Team extends BaseEntity implements ITeam {
   @Property({ required: true })
   name!: string;
 
@@ -145,18 +227,18 @@ export class Team extends BaseEntity {
 
   // Relationships
   @Relationship('HAS_TEAM', () => Company, { direction: 'in' })
-  company?: Company;
+  company?: ICompany;
 
   @Relationship('MEMBER_OF', () => User, { direction: 'in' })
-  members?: User[];
+  members?: IUser[];
 
   @Relationship('LEADS', () => User, { direction: 'in' })
-  teamLead?: User;
+  teamLead?: IUser;
 }
 
 // Post entity for content management
 @Node('Post')
-export class Post extends BaseEntity {
+export class Post extends BaseEntity implements IPost {
   @Property({ required: true })
   title!: string;
 
@@ -195,18 +277,18 @@ export class Post extends BaseEntity {
 
   // Relationships
   @Relationship('CREATED', () => User, { direction: 'in' })
-  author?: User;
+  author?: IUser;
 
   @Relationship('LIKES', () => User, { direction: 'in' })
-  likedBy?: User[];
+  likedBy?: IUser[];
 
   @Relationship('COMMENTED_ON', () => Comment, { direction: 'in' })
-  comments?: Comment[];
+  comments?: IComment[];
 }
 
 // Comment entity
 @Node('Comment')
-export class Comment extends BaseEntity {
+export class Comment extends BaseEntity implements IComment {
   @Property({ required: true })
   content!: string;
 
@@ -223,21 +305,21 @@ export class Comment extends BaseEntity {
 
   // Relationships
   @Relationship('COMMENTED_ON', () => Post, { direction: 'out' })
-  post?: Post;
+  post?: IPost;
 
   @Relationship('WROTE', () => User, { direction: 'in' })
-  author?: User;
+  author?: IUser;
 
   @Relationship('REPLY_TO', () => Comment, { direction: 'out' })
-  parentComment?: Comment;
+  parentComment?: IComment;
 
   @Relationship('REPLY_TO', () => Comment, { direction: 'in' })
-  replies?: Comment[];
+  replies?: IComment[];
 }
 
 // Project entity for work management
 @Node('Project')
-export class Project extends BaseEntity {
+export class Project extends BaseEntity implements IProject {
   @Property({ required: true })
   name!: string;
 
@@ -273,14 +355,14 @@ export class Project extends BaseEntity {
 
   // Relationships
   @Relationship('OWNS', () => Company, { direction: 'in' })
-  ownerCompany?: Company;
+  ownerCompany?: ICompany;
 
   @Relationship('ASSIGNED_TO', () => User, { direction: 'out' })
-  assignedUsers?: User[];
+  assignedUsers?: IUser[];
 
   @Relationship('MANAGED_BY', () => User, { direction: 'out' })
-  projectManager?: User;
+  projectManager?: IUser;
 
   @Relationship('WORKED_ON_BY', () => Team, { direction: 'out' })
-  assignedTeams?: Team[];
+  assignedTeams?: ITeam[];
 }

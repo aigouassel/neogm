@@ -1,6 +1,7 @@
 import { Node } from '../../src/lib/node';
 import { ConnectionManager } from '../../src/lib/connection';
 import { testConfig } from '../setup/test-config';
+import { TestIsolation } from '../setup/test-isolation';
 
 describe('Node', () => {
   let connectionManager: ConnectionManager;
@@ -15,12 +16,7 @@ describe('Node', () => {
   });
 
   beforeEach(async () => {
-    const session = connectionManager.getSession();
-    try {
-      await session.run('MATCH (n) DETACH DELETE n');
-    } finally {
-      await session.close();
-    }
+    await TestIsolation.ensureCleanDatabase(connectionManager);
   });
 
   describe('constructor', () => {

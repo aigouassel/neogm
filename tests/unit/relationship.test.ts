@@ -2,6 +2,7 @@ import { Node } from '../../src/lib/node';
 import { Relationship } from '../../src/lib/relationship';
 import { ConnectionManager } from '../../src/lib/connection';
 import { testConfig } from '../setup/test-config';
+import { TestIsolation } from '../setup/test-isolation';
 
 describe('Relationship', () => {
   let connectionManager: ConnectionManager;
@@ -18,12 +19,7 @@ describe('Relationship', () => {
   });
 
   beforeEach(async () => {
-    const session = connectionManager.getSession();
-    try {
-      await session.run('MATCH (n) DETACH DELETE n');
-    } finally {
-      await session.close();
-    }
+    await TestIsolation.ensureCleanDatabase(connectionManager);
 
     startNode = new Node('Person', { name: 'Alice' }, connectionManager);
     endNode = new Node('Person', { name: 'Bob' }, connectionManager);
