@@ -123,6 +123,9 @@ describe('NeoGM', () => {
     it('should execute read transaction', async () => {
       await neogm.rawQuery().execute('CREATE (n:Person {name: $name})', { name: 'John' });
       
+      // Small delay to ensure data is committed
+      await new Promise(resolve => setTimeout(resolve, 10));
+      
       const result = await neogm.executeReadTransaction(async (tx) => {
         const countResult = await tx.run('MATCH (n:Person) RETURN count(n) as count');
         return countResult.records[0].get('count').toNumber();

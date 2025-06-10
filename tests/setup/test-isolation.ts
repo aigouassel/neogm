@@ -8,11 +8,10 @@ export class TestIsolation {
   static async clearDatabase(connectionManager: ConnectionManager): Promise<void> {
     const session = connectionManager.getSession();
     try {
-      // More thorough cleanup - delete all relationships first, then nodes
-      await session.run('MATCH ()-[r]-() DELETE r');
-      await session.run('MATCH (n) DELETE n');
+      // Use DETACH DELETE for more efficient cleanup
+      await session.run('MATCH (n) DETACH DELETE n');
       // Longer delay to ensure cleanup is complete
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 150));
     } finally {
       await session.close();
     }

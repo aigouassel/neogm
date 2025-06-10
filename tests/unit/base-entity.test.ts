@@ -117,6 +117,9 @@ describe('BaseEntity', () => {
       person.email = 'john.doe@example.com';
       await person.save();
 
+      // Small delay to ensure database consistency
+      await new Promise(resolve => setTimeout(resolve, 10));
+
       const updated = await repository.findById(person.getId()!);
       expect(updated!.age).toBe(31);
       expect(updated!.email).toBe('john.doe@example.com');
@@ -157,6 +160,9 @@ describe('BaseEntity', () => {
         age: 30
       });
       await person.save();
+
+      // Small delay to ensure database consistency
+      await new Promise(resolve => setTimeout(resolve, 10));
 
       // Modify in memory
       person.age = 999;

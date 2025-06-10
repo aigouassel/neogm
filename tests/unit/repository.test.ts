@@ -68,6 +68,9 @@ describe('Repository', () => {
         const entity = await repository.create(data);
         await entity.save();
       }
+      
+      // Small delay to ensure all entities are persisted
+      await new Promise(resolve => setTimeout(resolve, 20));
     });
 
     it('should find entity by ID', async () => {

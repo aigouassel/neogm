@@ -163,7 +163,7 @@ describe('RawQuery', () => {
     it('should handle queries without parameters', async () => {
       const result = await rawQuery.execute('MATCH (n) RETURN count(n) as count');
       expect(result.records).toHaveLength(1);
-      expect(result.records[0].count.toNumber()).toBe(0);
+      expect(result.records[0].count).toBe(0);
     });
   });
 
@@ -179,7 +179,7 @@ describe('RawQuery', () => {
       expect(results).toHaveLength(2);
       
       const countResult = await rawQuery.execute('MATCH (n:Person) RETURN count(n) as count');
-      expect(countResult.records[0].count.toNumber()).toBe(2);
+      expect(countResult.records[0].count).toBe(2);
     });
 
     it('should rollback transaction on error', async () => {
@@ -191,7 +191,7 @@ describe('RawQuery', () => {
       await expect(rawQuery.executeInTransaction(queries)).rejects.toThrow();
       
       const countResult = await rawQuery.execute('MATCH (n:Person) RETURN count(n) as count');
-      expect(countResult.records[0].count.toNumber()).toBe(0);
+      expect(countResult.records[0].count).toBe(0);
     });
 
     it('should work with callback function', async () => {

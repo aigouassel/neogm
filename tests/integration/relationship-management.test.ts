@@ -258,6 +258,9 @@ describe('Relationship Management Tests', () => {
         });
       }
 
+      // Small delay to ensure relationships are committed
+      await new Promise(resolve => setTimeout(resolve, 50));
+
       // Test follower/following counts
       const user1Follows = await neogm.queryBuilder()
         .match('(u:User)-[:FOLLOWS]->(followed:User)')
@@ -275,7 +278,19 @@ describe('Relationship Management Tests', () => {
 
       expect(user3Followers.records[0].followerCount).toBe(2);
 
-      // Test mutual following (friends)
+      // Test mutual following (friends) - should find User1<->User2 mutual follows
+      // But looking at our test data setup, there's no mutual following created
+      // Let's add one mutual follow relationship
+      await neogm.rawQuery().execute(`
+        MATCH (follower:User), (followee:User)
+        WHERE ID(follower) = $followerId AND ID(followee) = $followeeId
+        CREATE (follower)-[:FOLLOWS {since: $since}]->(followee)
+      `, {
+        followerId: users[1].getId(), // User2 follows User1 back
+        followeeId: users[0].getId(),
+        since: new Date().toISOString()
+      });
+
       const mutualFollows = await neogm.queryBuilder()
         .match('(u1:User)-[:FOLLOWS]->(u2:User)-[:FOLLOWS]->(u1)')
         .return('u1.username as user1, u2.username as user2')

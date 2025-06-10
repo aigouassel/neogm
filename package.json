@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "jest",
+    "test": "jest --runInBand",
     "test:unit": "jest --testMatch='**/__tests__/**/*.spec.ts'",
     "test:integration": "jest --testMatch='**/__tests__/**/*.test.ts'",
     "test:watch": "jest --watch",
