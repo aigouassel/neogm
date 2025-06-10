@@ -100,7 +100,7 @@ describe('NeoGM', () => {
       
       await rawQuery.execute('CREATE (n:Person {name: $name})', { name: 'Test' });
       const result = await rawQuery.execute('MATCH (n:Person) RETURN count(n) as count');
-      expect(result.records[0].count.toNumber()).toBe(1);
+      expect(result.records[0].count).toBe(1);
     });
   });
 
@@ -162,7 +162,7 @@ describe('NeoGM', () => {
       
       await neogm.clearDatabase();
       
-      const users = await userRepo.findAll();
+      const users = await userRepo.find();
       expect(users).toHaveLength(0);
     });
   });

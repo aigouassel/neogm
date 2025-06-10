@@ -520,13 +520,13 @@ describe('Decorator-based Full Workflow Integration Tests', () => {
       const result = await neogm.rawQuery().execute(`
         MATCH (u:User)
         WHERE u.age > $minAge
-        RETURN u.username, u.age
+        RETURN u.username as username, u.age as age
         ORDER BY u.age DESC
       `, { minAge: 28 });
 
       expect(result.records).toHaveLength(2);
-      expect(result.records[0].u.properties.age).toBe(35);
-      expect(result.records[1].u.properties.age).toBe(30);
+      expect(result.records[0].age).toBe(35);
+      expect(result.records[1].age).toBe(30);
     });
   });
 

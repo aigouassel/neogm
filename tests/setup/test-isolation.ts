@@ -8,10 +8,11 @@ export class TestIsolation {
   static async clearDatabase(connectionManager: ConnectionManager): Promise<void> {
     const session = connectionManager.getSession();
     try {
-      // More thorough cleanup - also clear any indexes or constraints
-      await session.run('MATCH (n) DETACH DELETE n');
-      // Small delay to ensure cleanup is complete
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // More thorough cleanup - delete all relationships first, then nodes
+      await session.run('MATCH ()-[r]-() DELETE r');
+      await session.run('MATCH (n) DELETE n');
+      // Longer delay to ensure cleanup is complete
+      await new Promise(resolve => setTimeout(resolve, 100));
     } finally {
       await session.close();
     }
@@ -29,11 +30,19 @@ export class TestIsolation {
   }
 
   static async ensureCleanDatabase(connectionManager: ConnectionManager): Promise<void> {
-    await this.clearDatabase(connectionManager);
-    const isEmpty = await this.verifyDatabaseEmpty(connectionManager);
-    if (!isEmpty) {
-      console.warn('Database not properly cleaned, retrying...');
+    let retries = 3;
+    while (retries > 0) {
       await this.clearDatabase(connectionManager);
+      const isEmpty = await this.verifyDatabaseEmpty(connectionManager);
+      if (isEmpty) {
+        return;
+      }
+      if (retries > 1) {
+        console.warn('Database not properly cleaned, retrying...');
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+      retries--;
     }
+    throw new Error('Failed to clean database after multiple attempts');
   }
 }

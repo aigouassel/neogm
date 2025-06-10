@@ -551,8 +551,8 @@ describe('Complete Real-World Workflow Test', () => {
         .execute();
 
       expect(companyStructure.records).toHaveLength(2);
-      expect(companyStructure.records.find(r => r.team === 'Engineering')?.memberCount.toNumber()).toBe(3);
-      expect(companyStructure.records.find(r => r.team === 'Product')?.memberCount.toNumber()).toBe(2);
+      expect(companyStructure.records.find(r => r.team === 'Engineering')?.memberCount).toBe(3);
+      expect(companyStructure.records.find(r => r.team === 'Product')?.memberCount).toBe(2);
 
       // Verify project assignments
       const projectTeam = await neogm.queryBuilder()
@@ -561,7 +561,7 @@ describe('Complete Real-World Workflow Test', () => {
         .return('count(u) as assignedMembers')
         .execute();
 
-      expect(projectTeam.records[0].assignedMembers.toNumber()).toBe(4);
+      expect(projectTeam.records[0].assignedMembers).toBe(4);
 
       // Verify social engagement
       const socialMetrics = await neogm.queryBuilder()
@@ -574,7 +574,7 @@ describe('Complete Real-World Workflow Test', () => {
 
       expect(socialMetrics.records.length).toBe(5);
       const ctoMetrics = socialMetrics.records.find(r => r.user === 'cto_sarah');
-      expect(ctoMetrics?.followers.toNumber()).toBeGreaterThan(0);
+      expect(ctoMetrics?.followers).toBeGreaterThan(0);
 
       // Verify content engagement
       const contentMetrics = await neogm.queryBuilder()
@@ -583,8 +583,8 @@ describe('Complete Real-World Workflow Test', () => {
         .execute();
 
       expect(contentMetrics.records).toHaveLength(2);
-      expect(contentMetrics.records.every(r => r.comments.toNumber() >= 2)).toBe(true);
-      expect(contentMetrics.records.every(r => r.likes.toNumber() >= 4)).toBe(true);
+      expect(contentMetrics.records.every(r => r.comments >= 2)).toBe(true);
+      expect(contentMetrics.records.every(r => r.likes >= 4)).toBe(true);
 
       // Advanced analytics: Cross-team collaboration analysis
       const collaborationMetrics = await neogm.queryBuilder()
@@ -606,8 +606,8 @@ describe('Complete Real-World Workflow Test', () => {
         .return('p.budget as totalBudget, count(u) as assignedTeamSize')
         .execute();
 
-      expect(budgetAnalysis.records[0].totalBudget.toNumber()).toBe(750000);
-      expect(budgetAnalysis.records[0].assignedTeamSize.toNumber()).toBe(4);
+      expect(budgetAnalysis.records[0].totalBudget).toBe(750000);
+      expect(budgetAnalysis.records[0].assignedTeamSize).toBe(4);
 
       console.log('✅ Complete workflow simulation successful!');
     });
@@ -637,7 +637,7 @@ describe('Complete Real-World Workflow Test', () => {
         .execute();
 
       expect(influentialMembers.records).toHaveLength(3);
-      expect(influentialMembers.records[0].influenceScore.toNumber()).toBeGreaterThan(0);
+      expect(influentialMembers.records[0].influenceScore).toBeGreaterThan(0);
 
       // 2. Identify potential knowledge sharing opportunities
       const knowledgeGaps = await neogm.queryBuilder()
@@ -704,8 +704,8 @@ describe('Complete Real-World Workflow Test', () => {
         `)
         .execute();
 
-      expect(companyGrowth.records[0].currentEmployees.toNumber()).toBe(5);
-      expect(companyGrowth.records[0].foundedYear.toNumber()).toBe(2020);
+      expect(companyGrowth.records[0].currentEmployees).toBe(5);
+      expect(companyGrowth.records[0].foundedYear).toBe(2020);
     });
 
     it('should demonstrate real-time operational queries', async () => {
@@ -747,8 +747,8 @@ describe('Complete Real-World Workflow Test', () => {
         `)
         .execute();
 
-      expect(projectHealth.records[0].teamSize.toNumber()).toBe(4);
-      expect(projectHealth.records[0].budgetPerPerson.toNumber()).toBe(187500); // 750000 / 4
+      expect(projectHealth.records[0].teamSize).toBe(4);
+      expect(projectHealth.records[0].budgetPerPerson).toBe(187500); // 750000 / 4
 
       // 3. Team capacity analysis
       const teamCapacity = await neogm.queryBuilder()
@@ -799,7 +799,7 @@ describe('Complete Real-World Workflow Test', () => {
         .execute();
 
       expect(contentVelocity.records).toHaveLength(2);
-      expect(contentVelocity.records.every(r => r.engagementScore.toNumber() > 0)).toBe(true);
+      expect(contentVelocity.records.every(r => r.engagementScore > 0)).toBe(true);
     });
   });
 

@@ -102,6 +102,9 @@ export class QueryBuilder implements IQueryBuilder {
             const value = record.get(key);
             if (value && typeof value === 'object' && value.properties) {
               obj[key] = { ...value.properties, id: value.identity?.toNumber() };
+            } else if (value && typeof value === 'object' && typeof value.toNumber === 'function') {
+              // Handle Neo4j integers
+              obj[key] = value.toNumber();
             } else {
               obj[key] = value;
             }
@@ -140,6 +143,9 @@ export class RawQuery {
             const value = record.get(key);
             if (value && typeof value === 'object' && value.properties) {
               obj[key] = { ...value.properties, id: value.identity?.toNumber() };
+            } else if (value && typeof value === 'object' && typeof value.toNumber === 'function') {
+              // Handle Neo4j integers
+              obj[key] = value.toNumber();
             } else {
               obj[key] = value;
             }

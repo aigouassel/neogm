@@ -265,7 +265,7 @@ describe('Relationship Management Tests', () => {
         .return('count(followed) as followingCount')
         .execute();
 
-      expect(user1Follows.records[0].followingCount.toNumber()).toBe(3);
+      expect(user1Follows.records[0].followingCount).toBe(3);
 
       const user3Followers = await neogm.queryBuilder()
         .match('(follower:User)-[:FOLLOWS]->(u:User)')
@@ -273,7 +273,7 @@ describe('Relationship Management Tests', () => {
         .return('count(follower) as followerCount')
         .execute();
 
-      expect(user3Followers.records[0].followerCount.toNumber()).toBe(2);
+      expect(user3Followers.records[0].followerCount).toBe(2);
 
       // Test mutual following (friends)
       const mutualFollows = await neogm.queryBuilder()
@@ -382,8 +382,8 @@ describe('Relationship Management Tests', () => {
         .return('count(DISTINCT c) as commentCount, count(DISTINCT u) as likeCount')
         .execute();
 
-      expect(postStats.records[0].commentCount.toNumber()).toBe(2);
-      expect(postStats.records[0].likeCount.toNumber()).toBe(3);
+      expect(postStats.records[0].commentCount).toBe(2);
+      expect(postStats.records[0].likeCount).toBe(3);
     });
   });
 
@@ -525,7 +525,7 @@ describe('Relationship Management Tests', () => {
         .return('count(u) as teamSize')
         .execute();
 
-      expect(projectTeam.records[0].teamSize.toNumber()).toBe(4); // 3 devs + 1 QA
+      expect(projectTeam.records[0].teamSize).toBe(4); // 3 devs + 1 QA
 
       const projectManager = await neogm.queryBuilder()
         .match('(p:Project)-[:MANAGED_BY]->(u:User)')
@@ -633,7 +633,7 @@ describe('Relationship Management Tests', () => {
         .execute();
 
       expect(companyStats.records).toHaveLength(3);
-      expect(companyStats.records.every(r => r.employeeCount.toNumber() === 5)).toBe(true);
+      expect(companyStats.records.every(r => r.employeeCount === 5)).toBe(true);
     });
 
     it('should find most connected users', async () => {
@@ -651,7 +651,7 @@ describe('Relationship Management Tests', () => {
         .execute();
 
       expect(socialStats.records).toHaveLength(5);
-      expect(socialStats.records[0].followingCount.toNumber() + socialStats.records[0].followerCount.toNumber())
+      expect(socialStats.records[0].followingCount + socialStats.records[0].followerCount)
         .toBeGreaterThanOrEqual(0);
     });
 
@@ -694,8 +694,8 @@ describe('Relationship Management Tests', () => {
       const activeUsers = userActivity.records.find(r => r.isActive === true);
       const inactiveUsers = userActivity.records.find(r => r.isActive === false);
 
-      expect(activeUsers?.userCount.toNumber()).toBe(12);
-      expect(inactiveUsers?.userCount.toNumber()).toBe(3);
+      expect(activeUsers?.userCount).toBe(12);
+      expect(inactiveUsers?.userCount).toBe(3);
     });
   });
 
@@ -777,7 +777,7 @@ describe('Relationship Management Tests', () => {
         .return('count(r) as count')
         .execute();
 
-      expect(followCheck.records[0].count.toNumber()).toBe(0);
+      expect(followCheck.records[0].count).toBe(0);
     });
   });
 });
