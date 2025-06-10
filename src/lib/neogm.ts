@@ -3,9 +3,11 @@ import { Node } from './node';
 import { Relationship } from './relationship';
 import { QueryBuilder, RawQuery } from './query-builder';
 import { NeoGMConfig, TransactionFunction } from './types';
+import { BaseEntity, Repository } from './entity';
 
 export class NeoGM {
   private connectionManager: ConnectionManager;
+  private repositories = new Map<any, Repository<any>>();
 
   constructor(config: NeoGMConfig) {
     this.connectionManager = new ConnectionManager(config);
@@ -96,5 +98,22 @@ export class NeoGM {
     } finally {
       await session.close();
     }
+  }
+
+  getRepository<T extends BaseEntity>(entityClass: new (...args: any[]) => T): Repository<T> {
+    if (!this.repositories.has(entityClass)) {
+      const repository = new Repository(entityClass, this.connectionManager);
+      this.repositories.set(entityClass, repository);
+    }
+    return this.repositories.get(entityClass);
+  }
+
+  createEntity<T extends BaseEntity>(entityClass: new (...args: any[]) => T, data?: Partial<T>): T {
+    const entity = new entityClass();
+    entity.setConnectionManager(this.connectionManager);
+    if (data) {
+      Object.assign(entity, data);
+    }
+    return entity;
   }
 }
