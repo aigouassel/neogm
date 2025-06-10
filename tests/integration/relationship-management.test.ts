@@ -220,7 +220,7 @@ describe('Relationship Management Tests', () => {
   describe('Social Network Relationships', () => {
     it('should handle user following relationships', async () => {
       // Create users
-      const users = [];
+      const users: User[] = [];
       for (let i = 1; i <= 5; i++) {
         const user = await userRepo.create({
           username: `social_user${i}`,
@@ -295,7 +295,7 @@ describe('Relationship Management Tests', () => {
       await author.save();
 
       // Create readers
-      const readers = [];
+      const readers: User[] = [];
       for (let i = 1; i <= 3; i++) {
         const reader = await userRepo.create({
           username: `reader${i}`,
@@ -344,7 +344,7 @@ describe('Relationship Management Tests', () => {
       }
 
       // Create comments
-      const comments = [];
+      const comments: Comment[] = [];
       for (let i = 0; i < 2; i++) {
         const comment = await commentRepo.create({
           content: `This is comment ${i + 1} on the article`,
@@ -421,7 +421,7 @@ describe('Relationship Management Tests', () => {
       });
       await pm.save();
 
-      const devs = [];
+      const devs: User[] = [];
       for (let i = 1; i <= 3; i++) {
         const dev = await userRepo.create({
           username: `dev${i}`,
@@ -540,9 +540,9 @@ describe('Relationship Management Tests', () => {
   describe('Relationship Queries and Analytics', () => {
     beforeEach(async () => {
       // Create a comprehensive dataset for analytics
-      const companies = [];
-      const users = [];
-      const teams = [];
+      const companies: Company[] = [];
+      const users: User[] = [];
+      const teams: Team[] = [];
 
       // Create companies
       for (let i = 1; i <= 3; i++) {
