@@ -150,7 +150,7 @@ export abstract class BaseEntity {
     const metadata = this.getMetadata();
     const properties: Record<string, any> = {};
     
-    for (const [key, propertyMetadata] of metadata.properties) {
+    for (const [key, propertyMetadata] of Array.from(metadata.properties)) {
       const value = (this as any)[key];
       if (value !== undefined) {
         // Apply transformer if defined
@@ -167,7 +167,7 @@ export abstract class BaseEntity {
   private setPropertiesFromDatabase(dbProperties: Record<string, any>): void {
     const metadata = this.getMetadata();
     
-    for (const [key, propertyMetadata] of metadata.properties) {
+    for (const [key, propertyMetadata] of Array.from(metadata.properties)) {
       const value = dbProperties[key];
       if (value !== undefined) {
         // Apply reverse transformer if defined
@@ -180,7 +180,7 @@ export abstract class BaseEntity {
   }
 
   private validateProperties(metadata: NodeMetadata, properties: Record<string, any>): void {
-    for (const [key, propertyMetadata] of metadata.properties) {
+    for (const [key, propertyMetadata] of Array.from(metadata.properties)) {
       const value = properties[key];
       
       // Check required properties
@@ -203,7 +203,7 @@ export abstract class BaseEntity {
     };
     
     // Add all properties
-    for (const [key] of metadata.properties) {
+    for (const [key] of Array.from(metadata.properties)) {
       result[key] = (this as any)[key];
     }
     

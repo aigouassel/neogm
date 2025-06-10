@@ -107,6 +107,10 @@ describe('NeoGM', () => {
     });
 
     it('should find all relationships', async () => {
+      // Ensure nodes have IDs
+      expect(startNode.getId()).toBeDefined();
+      expect(endNode.getId()).toBeDefined();
+      
       const rel1 = neogm.createRelationship('KNOWS', startNode, endNode, { type: 'friend' });
       const rel2 = neogm.createRelationship('KNOWS', endNode, startNode, { type: 'colleague' });
       await Promise.all([rel1.save(), rel2.save()]);
@@ -151,7 +155,7 @@ describe('NeoGM', () => {
       
       await rawQuery.execute('CREATE (n:Person {name: $name})', { name: 'Test' });
       const result = await rawQuery.execute('MATCH (n:Person) RETURN count(n) as count');
-      expect(result.records[0].count).toBe(1);
+      expect(result.records[0].count.toNumber()).toBe(1);
     });
   });
 

@@ -10,7 +10,7 @@ describe('Decorators', () => {
     connectionManager = new ConnectionManager({
       uri: 'bolt://localhost:7687',
       user: 'neo4j',
-      password: 'test'
+      password: 'password'
     });
     metadata = MetadataStorage.getInstance();
   });

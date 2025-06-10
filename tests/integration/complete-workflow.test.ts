@@ -26,7 +26,7 @@ describe('Complete Real-World Workflow Test', () => {
     neogm = new NeoGM({
       uri: process.env.NEO4J_URI || 'bolt://localhost:7687',
       user: process.env.NEO4J_USER || 'neo4j',
-      password: process.env.NEO4J_PASSWORD || 'test',
+      password: process.env.NEO4J_PASSWORD || 'password',
       database: process.env.NEO4J_DATABASE || 'neo4j'
     });
 
@@ -808,9 +808,9 @@ describe('Complete Real-World Workflow Test', () => {
       const startTime = Date.now();
 
       // Create a larger dataset to test performance
-      const companies = [];
-      const users = [];
-      const projects = [];
+      const companies: Company[] = [];
+      const users: User[] = [];
+      const projects: Project[] = [];
 
       // Create 5 companies
       for (let i = 1; i <= 5; i++) {

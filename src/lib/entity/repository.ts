@@ -147,7 +147,7 @@ export class Repository<T extends BaseEntity> {
     
     // Set properties from database
     const metadata = this.getMetadata();
-    for (const [key, propertyMetadata] of metadata.properties) {
+    for (const [key, propertyMetadata] of Array.from(metadata.properties)) {
       const value = nodeData.properties[key];
       if (value !== undefined) {
         // Apply reverse transformer if defined

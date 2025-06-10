@@ -88,8 +88,14 @@ describe('Relationship', () => {
 
   describe('delete', () => {
     it('should delete an existing relationship', async () => {
+      // Ensure nodes are saved again after database clear
+      await startNode.save();
+      await endNode.save();
+      
       const relationship = new Relationship('KNOWS', startNode, endNode, {}, connectionManager);
       await relationship.save();
+      
+      expect(relationship.getId()).toBeDefined(); // Ensure it has an ID
       
       const result = await relationship.delete();
       expect(result).toBe(true);
@@ -104,6 +110,10 @@ describe('Relationship', () => {
 
   describe('findById', () => {
     it('should find relationship by ID', async () => {
+      // Ensure nodes are saved again after database clear
+      await startNode.save();
+      await endNode.save();
+      
       const originalRel = new Relationship('KNOWS', startNode, endNode, { since: 2020 }, connectionManager);
       await originalRel.save();
       
@@ -123,6 +133,10 @@ describe('Relationship', () => {
 
   describe('findAll', () => {
     beforeEach(async () => {
+      // Ensure main nodes are saved again after database clear
+      await startNode.save();
+      await endNode.save();
+      
       const node3 = new Node('Person', { name: 'Charlie' }, connectionManager);
       await node3.save();
 
@@ -152,6 +166,10 @@ describe('Relationship', () => {
 
   describe('findBetweenNodes', () => {
     it('should find relationships between specific nodes', async () => {
+      // Ensure nodes are saved again after database clear
+      await startNode.save();
+      await endNode.save();
+      
       const rel1 = new Relationship('KNOWS', startNode, endNode, { type: 'friend' }, connectionManager);
       const rel2 = new Relationship('WORKS_WITH', startNode, endNode, { department: 'IT' }, connectionManager);
       await Promise.all([rel1.save(), rel2.save()]);
@@ -168,6 +186,9 @@ describe('Relationship', () => {
     });
 
     it('should return empty array when no relationships exist', async () => {
+      // Ensure nodes are saved again after database clear
+      await startNode.save();
+      
       const node3 = new Node('Person', { name: 'Charlie' }, connectionManager);
       await node3.save();
       
@@ -184,6 +205,10 @@ describe('Relationship', () => {
 
   describe('toJSON', () => {
     it('should serialize relationship to JSON', async () => {
+      // Ensure nodes are saved again after database clear
+      await startNode.save();
+      await endNode.save();
+      
       const relationship = new Relationship('KNOWS', startNode, endNode, { since: 2020 }, connectionManager);
       await relationship.save();
       
