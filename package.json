@@ -17,7 +17,11 @@
     "clean": "rimraf dist",
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
-    "lint": "eslint \"src/**/*.ts\""
+    "lint": "eslint \"src/**/*.ts\"",
+    "docker:up": "docker-compose -f docker-compose.test.yml up -d",
+    "docker:down": "docker-compose -f docker-compose.test.yml down -v",
+    "docker:logs": "docker-compose -f docker-compose.test.yml logs -f",
+    "docker:restart": "yarn docker:down && yarn docker:up"
   },
   "repository": {
     "type": "git",
