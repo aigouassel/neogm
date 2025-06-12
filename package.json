@@ -1,6 +1,6 @@
 {
   "name": "neogm",
-  "version": "0.1.0",
+  "version": "2.0.3",
   "description": "TypeScript-first Neo4j Object Graph Mapper (OGM) for building type-safe graph database applications",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,45 +14,61 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf dist",
     "test": "jest --runInBand",
+    "test:unit": "jest --testMatch='**/__tests__/**/*.spec.ts'",
+    "test:integration": "jest --testMatch='**/__tests__/**/*.test.ts'",
     "test:watch": "jest --watch",
-    "lint": "eslint \"src/**/*.ts\"",
+    "lint": "eslint 'src/**/*.ts'",
+    "clean": "rimraf dist",
+    "prepare": "yarn clean && yarn build",
+    "prepublishOnly": "yarn lint",
     "docker:up": "docker-compose -f docker-compose.test.yml up -d",
     "docker:down": "docker-compose -f docker-compose.test.yml down -v",
     "docker:logs": "docker-compose -f docker-compose.test.yml logs -f",
     "docker:restart": "yarn docker:down && yarn docker:up"
   },
+  "packageManager": "yarn@1.22.19",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aigouassel/neogm.git"
+    "url": "git+https://github.com/aigouassel/neorm.git"
   },
   "keywords": [
     "neo4j",
     "ogm",
-    "typescript",
+    "orm",
     "graph",
-    "database"
+    "database",
+    "typescript",
+    "cypher",
+    "graph-database",
+    "neo4j-driver",
+    "object-graph-mapping",
+    "decorators",
+    "repository-pattern",
+    "type-safety",
+    "entity-framework"
   ],
   "author": "audreyigouassel@gmail.com",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/aigouassel/neogm/issues"
+    "url": "https://github.com/aigouassel/neorm/issues"
   },
-  "homepage": "https://github.com/aigouassel/neogm#readme",
+  "homepage": "https://github.com/aigouassel/neorm#readme",
   "dependencies": {
     "neo4j-driver": "^5.28.1",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
-    "@types/node": "^22.15.21",
-    "typescript": "^5.0.4",
-    "rimraf": "^4.4.1",
     "@types/jest": "^29.5.0",
-    "jest": "^29.5.0",
-    "ts-jest": "^29.1.0",
+    "@types/node": "^22.15.21",
     "@typescript-eslint/eslint-plugin": "^8.33.1",
     "@typescript-eslint/parser": "^8.33.1",
-    "eslint": "^8.38.0"
+    "eslint": "^8.38.0",
+    "jest": "^29.5.0",
+    "jest-circus": "^29.5.0",
+    "parse-neo4j": "^0.6.11",
+    "rimraf": "^4.4.1",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.4"
   }
 }
