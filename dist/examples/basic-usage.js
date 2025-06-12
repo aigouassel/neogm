@@ -142,8 +142,8 @@ async function basicExample() {
             .return('p.name as name, p.email as email')
             .execute();
         console.log('Company employees:', employeeQuery.records.map(r => ({
-            name: r.get('name'),
-            email: r.get('email')
+            name: r.name,
+            email: r.email
         })));
         // Raw query example
         const connectionQuery = await neogm.rawQuery().execute(`
@@ -151,8 +151,8 @@ async function basicExample() {
       RETURN a.name as person1, b.name as person2
     `);
         console.log('Friendships:', connectionQuery.records.map(r => ({
-            person1: r.get('person1'),
-            person2: r.get('person2')
+            person1: r.person1,
+            person2: r.person2
         })));
         // Transaction example
         await neogm.executeInTransaction(async (tx) => {
@@ -177,7 +177,7 @@ async function basicExample() {
       MATCH ()-[r:WORKS_FOR]->()
       RETURN count(r) as count
     `);
-        console.log('Total employees:', totalEmployees.records[0].get('count').toNumber());
+        console.log('Total employees:', totalEmployees.records[0].count);
     }
     catch (error) {
         console.error('Error:', error);
