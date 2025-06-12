@@ -1,0 +1,35 @@
+{
+  "name": "neogm",
+  "version": "0.1.0",
+  "description": "TypeScript-first Neo4j Object Graph Mapper (OGM) for building type-safe graph database applications",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "README.md", "LICENSE"],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aigouassel/neogm.git"
+  },
+  "keywords": ["neo4j", "ogm", "typescript", "graph", "database"],
+  "author": "audreyigouassel@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aigouassel/neogm/issues"
+  },
+  "homepage": "https://github.com/aigouassel/neogm#readme",
+  "dependencies": {
+    "neo4j-driver": "^5.28.1",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "typescript": "^5.0.4",
+    "rimraf": "^4.4.1"
+  }
+}
