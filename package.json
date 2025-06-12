@@ -25,7 +25,9 @@
     "docker:up": "docker-compose -f docker-compose.test.yml up -d",
     "docker:down": "docker-compose -f docker-compose.test.yml down -v",
     "docker:logs": "docker-compose -f docker-compose.test.yml logs -f",
-    "docker:restart": "yarn docker:down && yarn docker:up"
+    "docker:restart": "yarn docker:down && yarn docker:up",
+    "example:basic": "npx tsx src/examples/basic-usage.ts",
+    "example:decorator": "npx tsx src/examples/decorator-usage.ts"
   },
   "packageManager": "yarn@1.22.19",
   "repository": {
