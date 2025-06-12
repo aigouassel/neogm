@@ -18,7 +18,7 @@
     "test:unit": "jest --testMatch='**/__tests__/**/*.spec.ts'",
     "test:integration": "jest --testMatch='**/__tests__/**/*.test.ts'",
     "test:watch": "jest --watch",
-    "lint": "eslint 'src/**/*.ts'",
+    "lint": "eslint 'src/lib/**/*.ts' 'src/index.ts' --ignore-pattern '**/__tests__/**' --ignore-pattern '**/*.test.ts' --ignore-pattern '**/*.spec.ts'",
     "clean": "rimraf dist",
     "prepare": "yarn clean && yarn build",
     "prepublishOnly": "yarn lint",
@@ -30,7 +30,7 @@
   "packageManager": "yarn@1.22.19",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aigouassel/neorm.git"
+    "url": "git+https://github.com/aigouassel/neogm.git"
   },
   "keywords": [
     "neo4j",
@@ -51,9 +51,9 @@
   "author": "audreyigouassel@gmail.com",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/aigouassel/neorm/issues"
+    "url": "https://github.com/aigouassel/neogm/issues"
   },
-  "homepage": "https://github.com/aigouassel/neorm#readme",
+  "homepage": "https://github.com/aigouassel/neogm#readme",
   "dependencies": {
     "neo4j-driver": "^5.28.1",
     "reflect-metadata": "^0.1.13"

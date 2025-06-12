@@ -2,7 +2,7 @@
  * Query runner for executing Neo4j queries
  */
 
-import { Record as Neo4jRecord, Result } from 'neo4j-driver';
+import { Record as Neo4jRecord } from 'neo4j-driver';
 import { SessionManager, SessionOptions } from './session-manager';
 
 /**
