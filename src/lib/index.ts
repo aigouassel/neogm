@@ -2,11 +2,11 @@
  * Main library exports
  */
 
-// Export all modules from the lib directory
-export * from './data-access';
-// These will be implemented later:
-// export * from './decorators';
-// export * from './model';
-// export * from './query';
-// export * from './registry';
-// export * from './deployer';
+export { NeoGM } from './neogm';
+export { QueryBuilder, RawQuery } from './query-builder';
+export { ConnectionManager } from './connection';
+export * from './types';
+
+// Decorator-based ORM exports
+export * from './decorators';
+export * from './entity';
