@@ -1,6 +1,6 @@
 import { NeoGM } from '../lib/neogm';
 import { Node, Property, Relationship } from '../lib/decorators';
-import { BaseEntity, Repository } from '../lib/entity';
+import { BaseEntity } from '../lib/entity';
 
 // Example entity definitions using decorators
 @Node('Person')
